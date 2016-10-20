@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatDialog implements FingerprintDialog.C
         mButton.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Digitus.get().notifyPasswordValidation(password.equals("password"));
+                dialog.notifyPasswordValidation(password.equals("password"));
             }
         }, 1500);
     }
