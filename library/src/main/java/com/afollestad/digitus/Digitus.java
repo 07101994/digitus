@@ -1,6 +1,7 @@
 package com.afollestad.digitus;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -15,15 +16,17 @@ import android.support.v4.content.ContextCompat;
 /**
  * @author Aidan Follestad (afollestad)
  */
+@SuppressWarnings("WeakerAccess")
 public class Digitus extends DigitusBase {
 
+    @SuppressLint("StaticFieldLeak")
     private static Digitus mInstance;
 
     private int mRequestCode;
-    protected AuthenticationHandler mAuthenticationHandler;
+    private AuthenticationHandler mAuthenticationHandler;
     private boolean mIsReady;
 
-    protected Digitus(@NonNull Activity context, @NonNull String keyName, int requestCode, @NonNull DigitusCallback callback) {
+    private Digitus(@NonNull Activity context, @NonNull String keyName, int requestCode, @NonNull DigitusCallback callback) {
         super(context, keyName, callback);
         mRequestCode = requestCode;
     }
