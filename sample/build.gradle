@@ -18,7 +18,7 @@ android {
         applicationId "com.afollestad.digitussample"
         minSdkVersion 14
         targetSdkVersion TARGET_SDK
-        versionCode 13
+        versionCode 14
         versionName PUBLISH_VERSION
     }
     buildTypes {
