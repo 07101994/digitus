@@ -45,7 +45,7 @@ class MUtils {
         int granted = ContextCompat.checkSelfPermission(digitus.mContext, Manifest.permission.USE_FINGERPRINT);
         if (granted != PackageManager.PERMISSION_GRANTED) return false;
         //noinspection ResourceType
-        return digitus.mFingerprintManager.isHardwareDetected() && digitus.mFingerprintManager.hasEnrolledFingerprints();
+        return digitus.mFingerprintManager.isHardwareDetected();
     }
 
     public static void initBase(Context context, DigitusBase digitus) {
