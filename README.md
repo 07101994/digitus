@@ -242,6 +242,15 @@ You show the dialog like this:
 FingerprintDialog.show(this, getString(R.string.app_name), 69, true);
 ```
 
+You can change the title of dialogs, if you wish:
+
+```java
+FingerprintDialog dialog = FingerprintDialog.show(this, getString(R.string.app_name), 69, true);
+dialog.setTitle("Hello!"); // or R.string.some_string
+```
+
+---
+
 It's pretty similar to `Digitus.init()`. The first parameter must be a `FragmentActivity` instance
 (or `AppCompatActivity`), which implements the `FingerprintDialog.Callback` interface:
 

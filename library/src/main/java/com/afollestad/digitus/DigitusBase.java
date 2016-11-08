@@ -1,35 +1,31 @@
 package com.afollestad.digitus;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.support.annotation.NonNull;
 import android.view.inputmethod.InputMethodManager;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 
 /**
  * @author Aidan Follestad (afollestad)
  */
 class DigitusBase {
 
-    protected DigitusBase(@NonNull Activity context, @NonNull String keyName, @NonNull DigitusCallback callback) {
+    DigitusBase(@NonNull Activity context, @NonNull String keyName, @NonNull DigitusCallback callback) {
         mContext = context;
         mKeyName = keyName;
         mCallback = callback;
@@ -39,7 +35,7 @@ class DigitusBase {
             MUtils.initBase(context, this);
     }
 
-    protected void deinitBase() {
+    void deinitBase() {
         mKeyName = null;
         mContext = null;
         mKeyguardManager = null;
@@ -49,15 +45,15 @@ class DigitusBase {
         mCipher = null;
     }
 
-    protected String mKeyName;
-    protected Context mContext;
-    protected KeyguardManager mKeyguardManager;
-    protected FingerprintManager mFingerprintManager;
-    protected InputMethodManager mInputMethodManager;
-    protected KeyStore mKeyStore;
-    protected KeyGenerator mKeyGenerator;
-    protected Cipher mCipher;
-    protected DigitusCallback mCallback;
+    String mKeyName;
+    Context mContext;
+    KeyguardManager mKeyguardManager;
+    FingerprintManager mFingerprintManager;
+    InputMethodManager mInputMethodManager;
+    KeyStore mKeyStore;
+    KeyGenerator mKeyGenerator;
+    Cipher mCipher;
+    DigitusCallback mCallback;
 
     public void setCallback(@NonNull DigitusCallback callback) {
         this.mCallback = callback;
@@ -71,15 +67,21 @@ class DigitusBase {
      * been disabled or reset after the key was generated, or if a fingerprint got enrolled after
      * the key was generated.
      */
-    protected boolean initCipher() {
-        return MUtils.initCipher(this);
+    boolean initCipher() {
+        try {
+            return MUtils.initCipher(this);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
      * Creates a symmetric key in the Android Key Store which can only be used after the user has
      * authenticated with fingerprint.
      */
-    public final void recreateKey() {
+    @SuppressLint("NewApi")
+    final void recreateKey() {
         // The enrolling flow for fingerprint. This is where you ask the user to set up fingerprint
         // for your flow. Use of keys is necessary if you need to know if the set of
         // enrolled fingerprints has changed.
@@ -90,8 +92,8 @@ class DigitusBase {
             mKeyGenerator.init(new KeyGenParameterSpec.Builder(mKeyName,
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                            // Require the user to authenticate with a fingerprint to authorize every use
-                            // of the key
+                    // Require the user to authenticate with a fingerprint to authorize every use
+                    // of the key
                     .setUserAuthenticationRequired(true)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
