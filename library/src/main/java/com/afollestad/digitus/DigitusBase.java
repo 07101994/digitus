@@ -26,37 +26,37 @@ import javax.crypto.KeyGenerator;
 class DigitusBase {
 
     DigitusBase(@NonNull Activity context, @NonNull String keyName, @NonNull DigitusCallback callback) {
-        mContext = context;
-        mKeyName = keyName;
-        mCallback = callback;
+        this.context = context;
+        this.keyName = keyName;
+        this.callback = callback;
 
-        mInputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             MUtils.initBase(context, this);
     }
 
     void deinitBase() {
-        mKeyName = null;
-        mContext = null;
-        mKeyguardManager = null;
-        mFingerprintManager = null;
-        mKeyStore = null;
-        mKeyGenerator = null;
-        mCipher = null;
+        keyName = null;
+        context = null;
+        keyguardManager = null;
+        fingerprintManager = null;
+        keyStore = null;
+        keyGenerator = null;
+        cipher = null;
     }
 
-    String mKeyName;
-    Context mContext;
-    KeyguardManager mKeyguardManager;
-    FingerprintManager mFingerprintManager;
-    InputMethodManager mInputMethodManager;
-    KeyStore mKeyStore;
-    KeyGenerator mKeyGenerator;
-    Cipher mCipher;
-    DigitusCallback mCallback;
+    String keyName;
+    Context context;
+    KeyguardManager keyguardManager;
+    FingerprintManager fingerprintManager;
+    InputMethodManager inputMethodManager;
+    KeyStore keyStore;
+    KeyGenerator keyGenerator;
+    Cipher cipher;
+    DigitusCallback callback;
 
     public void setCallback(@NonNull DigitusCallback callback) {
-        this.mCallback = callback;
+        this.callback = callback;
     }
 
     /**
@@ -86,10 +86,10 @@ class DigitusBase {
         // for your flow. Use of keys is necessary if you need to know if the set of
         // enrolled fingerprints has changed.
         try {
-            mKeyStore.load(null);
+            keyStore.load(null);
             // Set the alias of the entry in Android KeyStore where the key will appear
             // and the constrains (purposes) in the constructor of the Builder
-            mKeyGenerator.init(new KeyGenParameterSpec.Builder(mKeyName,
+            keyGenerator.init(new KeyGenParameterSpec.Builder(keyName,
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                     // Require the user to authenticate with a fingerprint to authorize every use
@@ -97,7 +97,7 @@ class DigitusBase {
                     .setUserAuthenticationRequired(true)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
-            mKeyGenerator.generateKey();
+            keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | CertificateException | IOException e) {
             throw new RuntimeException(e);
         }

@@ -24,7 +24,7 @@ class AuthenticationHandler extends FingerprintManager.AuthenticationCallback {
     public AuthenticationHandler(Digitus digitus, FingerprintManager.CryptoObject cryptoObject) {
         mDigitus = digitus;
         mCryptoObject = cryptoObject;
-        mContext = digitus.mContext.getApplicationContext();
+        mContext = digitus.context.getApplicationContext();
     }
 
     public boolean isReadyToStart() {
@@ -35,7 +35,7 @@ class AuthenticationHandler extends FingerprintManager.AuthenticationCallback {
     public void start() {
         mCancellationSignal = new CancellationSignal();
         mSelfCancelled = false;
-        mDigitus.mFingerprintManager.authenticate(mCryptoObject, mCancellationSignal, 0 /* flags */, this, null);
+        mDigitus.fingerprintManager.authenticate(mCryptoObject, mCancellationSignal, 0 /* flags */, this, null);
     }
 
     public void stop() {
@@ -52,32 +52,32 @@ class AuthenticationHandler extends FingerprintManager.AuthenticationCallback {
     public void onAuthenticationError(int errorCode, CharSequence errString) {
         super.onAuthenticationError(errorCode, errString);
         if (!mSelfCancelled) {
-            if (mDigitus.mCallback != null)
-                mDigitus.mCallback.onDigitusError(mDigitus, DigitusErrorType.UNRECOVERABLE_ERROR, new Exception(errString.toString()));
+            if (mDigitus.callback != null)
+                mDigitus.callback.onDigitusError(mDigitus, DigitusErrorType.UNRECOVERABLE_ERROR, new Exception(errString.toString()));
         }
         stop();
-        mDigitus.mFingerprintManager = mContext.getSystemService(FingerprintManager.class);
+        mDigitus.fingerprintManager = mContext.getSystemService(FingerprintManager.class);
     }
 
     @Override
     public void onAuthenticationFailed() {
         super.onAuthenticationFailed();
-        if (mDigitus.mCallback != null)
-            mDigitus.mCallback.onDigitusError(mDigitus, DigitusErrorType.FINGERPRINT_NOT_RECOGNIZED, new Exception("Fingerprint not recognized, try again."));
+        if (mDigitus.callback != null)
+            mDigitus.callback.onDigitusError(mDigitus, DigitusErrorType.FINGERPRINT_NOT_RECOGNIZED, new Exception("Fingerprint not recognized, try again."));
     }
 
     @Override
     public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
         super.onAuthenticationHelp(helpCode, helpString);
-        if (mDigitus.mCallback != null)
-            mDigitus.mCallback.onDigitusError(mDigitus, DigitusErrorType.HELP_ERROR, new Exception(helpString.toString()));
+        if (mDigitus.callback != null)
+            mDigitus.callback.onDigitusError(mDigitus, DigitusErrorType.HELP_ERROR, new Exception(helpString.toString()));
     }
 
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         super.onAuthenticationSucceeded(result);
-        if (mDigitus.mCallback != null)
-            mDigitus.mCallback.onDigitusAuthenticated(mDigitus);
+        if (mDigitus.callback != null)
+            mDigitus.callback.onDigitusAuthenticated(mDigitus);
         stop();
     }
 }

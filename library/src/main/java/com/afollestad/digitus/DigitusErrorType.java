@@ -4,7 +4,6 @@ package com.afollestad.digitus;
  * @author Aidan Follestad (afollestad)
  */
 public enum DigitusErrorType {
-
     REGISTRATION_NEEDED,
     PERMISSION_DENIED,
     FINGERPRINT_NOT_RECOGNIZED,

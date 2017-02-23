@@ -34,35 +34,35 @@ class MUtils {
     private MUtils() {
     }
 
-    public static boolean isFingerprintRegistered(Digitus digitus) {
+    static boolean isFingerprintRegistered(Digitus digitus) {
         if (!isFingerprintAuthAvailable(digitus)) return false;
         //noinspection ResourceType
-        return digitus.mKeyguardManager.isKeyguardSecure() && digitus.mFingerprintManager.hasEnrolledFingerprints();
+        return digitus.keyguardManager.isKeyguardSecure() && digitus.fingerprintManager.hasEnrolledFingerprints();
     }
 
-    public static boolean isFingerprintAuthAvailable(Digitus digitus) {
+    static boolean isFingerprintAuthAvailable(Digitus digitus) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
-        int granted = ContextCompat.checkSelfPermission(digitus.mContext, Manifest.permission.USE_FINGERPRINT);
+        int granted = ContextCompat.checkSelfPermission(digitus.context, Manifest.permission.USE_FINGERPRINT);
         if (granted != PackageManager.PERMISSION_GRANTED) return false;
         //noinspection ResourceType
-        return digitus.mFingerprintManager.isHardwareDetected();
+        return digitus.fingerprintManager.isHardwareDetected();
     }
 
-    public static void initBase(Context context, DigitusBase digitus) {
-        digitus.mKeyguardManager = context.getSystemService(KeyguardManager.class);
-        digitus.mFingerprintManager = context.getSystemService(FingerprintManager.class);
+    static void initBase(Context context, DigitusBase digitus) {
+        digitus.keyguardManager = context.getSystemService(KeyguardManager.class);
+        digitus.fingerprintManager = context.getSystemService(FingerprintManager.class);
         try {
-            digitus.mKeyStore = KeyStore.getInstance("AndroidKeyStore");
+            digitus.keyStore = KeyStore.getInstance("AndroidKeyStore");
         } catch (KeyStoreException e) {
             throw new RuntimeException("Failed to get an instance of KeyStore", e);
         }
         try {
-            digitus.mKeyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+            digitus.keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new RuntimeException("Failed to get an instance of KeyGenerator", e);
         }
         try {
-            digitus.mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
+            digitus.cipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
                     + KeyProperties.BLOCK_MODE_CBC + "/"
                     + KeyProperties.ENCRYPTION_PADDING_PKCS7);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -70,11 +70,11 @@ class MUtils {
         }
     }
 
-    public static boolean initCipher(DigitusBase digitus) {
+    static boolean initCipher(DigitusBase digitus) {
         try {
-            digitus.mKeyStore.load(null);
-            SecretKey key = (SecretKey) digitus.mKeyStore.getKey(digitus.mKeyName, null);
-            digitus.mCipher.init(Cipher.ENCRYPT_MODE, key);
+            digitus.keyStore.load(null);
+            SecretKey key = (SecretKey) digitus.keyStore.getKey(digitus.keyName, null);
+            digitus.cipher.init(Cipher.ENCRYPT_MODE, key);
             return true;
         } catch (KeyPermanentlyInvalidatedException e) {
             return false;
